@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options
 from webdriver_manager.firefox import GeckoDriverManager
 from bs4 import BeautifulSoup
+import re
 
 def scrape_imdb(choice):
     
@@ -35,6 +36,17 @@ def scrape_imdb(choice):
     # Extract movie titles and ratings
     titles = [a.get_text(strip=True) for a in soup.find_all('a', class_='ipc-title-link-wrapper')]
     ratings = []
+    data = [div.get_text(strip=True) for div in soup.findChildren('div', class_='cli-title-metadata')]
+    year = [None] * len(data)
+    runtime = [None] * len(data)
+    age_rating = [None] * len(data)
+
+    for i, info in enumerate(data):
+        match = re.match(r"(\d{4})\s*((?:\d{1,2}h\s*)?(?:\d{1,2}m)?)\s*([A-Za-z0-9- ]+)?", info)
+        if match:
+            year[i] = match.group(1)
+            runtime[i] = match.group(2)
+            age_rating[i] = match.group(3)
 
     for rating in soup.find_all('div', class_='cli-ratings-container'):
         rating_span = rating.find('span', class_='ipc-rating-star--rating')
@@ -45,4 +57,4 @@ def scrape_imdb(choice):
             ratings.append("No rating")
 
     # Return titles and ratings as a list of tuples
-    return [(titles[i], ratings[i]) for i in range(min(len(titles), len(ratings)))]
+    return [(titles[i], ratings[i], year[i], runtime[i], age_rating[i]) for i in range(min(len(titles), len(ratings)))]
