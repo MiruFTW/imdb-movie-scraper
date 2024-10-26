@@ -11,16 +11,19 @@ def display_results():
     # Clear previous results
     results_display.delete(1.0, tk.END)
 
-    results_display.insert(tk.END, f"Title{blank:45} | Rating\n")
+    results_display.insert(tk.END, f"Title{blank:45} | Rating{blank:4} | Year{blank:1} | Runtime{blank:0} | Age Rating{blank:1}\n")
 
     # Display each title and rating with aligned formatting
-    for title, rating in results:
-        results_display.insert(tk.END, f"{title:50} | {rating}\n")
+    for title, rating, year, runtime, age_rating in results:
+        formatted_runtime = runtime if runtime != "" else "N/A"
+        formatted_year = year if year is not None else "N/A"
+        formatted_age_rating = age_rating if age_rating is not None else "N/A"
+        results_display.insert(tk.END, f"{title:50} | {rating:10} | {formatted_year:5} | {formatted_runtime:6}  | {formatted_age_rating:10}\n")
 
 # Initialize Tkinter window
 root = tk.Tk()
 root.title("IMDb Scraper")
-root.geometry("640x480")
+root.geometry("854x480")
 
 # Add title label
 title_label = tk.Label(root, text="IMDb Movie Scraper", font=("Arial", 16))
